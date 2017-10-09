@@ -1,44 +1,53 @@
 # File: Readstq.py
 import datetime
+import numpy as np
+
+
 
 
 class readSTQFormat:
 	
-	
-	def __init__(self, filename):
-			f = open(filename, 'r')
+	def __init__(self):
 			
-			self.table = []
+			self.table = np.array([])
 			self.adj_table = []
 			self.per_adj_table = []
 
+			allFiles = [r'data\5min-03may2017-19may2017\us\nasdaq stocks\2\tsla.us.txt', 
+						#r'data\5min-22may2017-07june2017\us\nasdaq stocks\2\tsla.us.txt',
+						#r'data\5min-08june2017-23june2017\us\nasdaq stocks\2\tsla.us.txt',
+						r'data\5min-26june2017-12july2017\us\nasdaq stocks\2\tsla.us.txt'
+						]
+			
+			for filename in allFiles:
+				self.readSingleFile(filename)
+
+	def readSingleFile(self, filename):
+			
+			values = np.loadtxt(filename, delimiter=',', usecols=[2,3,4,5,6], skiprows=1)
+			dateTimes = np.loadtxt(filename, delimiter=',', usecols=[0,1], skiprows=1, dtype = np.str)
+			print(values)
+			print(dateTimes)
+			nRow, nCol = values.shape
+			print(nRow)
+			print(nCol)
+			if nRow%78 == 0:
+				print("yes")
+				reshape(values[:,0], (78, nRow/78))
+				print(values)
+			else:
+				print("no")
+				
 			day_index = 0
 			time_index = 0
 			
 			day = []
-			for next in f:
-				if next[0]=='2':
-					if next[11]== '2' and next[12]=='2' and next[14]== '0' and next[15]=='0':
-						day.append(round((float(next.split(',')[2])+float(next.split(',')[5]))/2, 2))
-						time_index += 1
-						self.table.append(day)
-						day_index += 1
-						time_index = 0
-						day = []
-					else:
-						day.append(round((float(next.split(',')[2])+float(next.split(',')[5]))/2, 2))
-						time_index += 1
+			newd = 0
+			for i in range(nRow):
+				if dateTimes[0][1]=='22:00:00':
+						newd = 1
+				else
 
-			for i in range(len(self.table)):
-				day = []
-				for j in range(len(self.table[i])):
-					day.append(round(self.table[i][j] - self.table[i][0], 2))
-				self.adj_table.append(day)
 	
-			for i in range(len(self.table)):
-				day = []
-				for j in range(len(self.table[i])):
-					day.append(round(((self.table[i][j] - self.table[i][0])/self.table[i][0])*10000, 0))
-				self.per_adj_table.append(day)
 
-
+red1 = readSTQFormat()
